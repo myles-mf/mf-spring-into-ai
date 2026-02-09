@@ -3,3 +3,14 @@ node_modules
 *.local
 .env
 .env.*
+
+# Local / your-part-only — not in GitHub
+week1/YOUR-PART-ONLY.md
+week1/YouTube-SCRIPT.md
+week1/DRAFT-POSTS.md
+week1/BLOG-POST.md
+week1/TRACKER.md
+week1/GUIDE.md
+week1/PLAN.md
+week1/PROJECT-NAME.md
+WEEK1-WIN-PLAN.md
