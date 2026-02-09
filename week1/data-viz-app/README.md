@@ -17,10 +17,8 @@ Open the URL shown (e.g. http://localhost:5173).
 
 ## Live app
 
-<!-- Add your deployed URL here after deploying, e.g. -->
-<!-- **Live app:** https://week1-data-viz.vercel.app -->
+**Live app:** https://mf-spring-into-ai.vercel.app
 
-_Deploy to Vercel/Netlify and add the link above._
 
 ## Screenshot
 
@@ -32,3 +30,9 @@ _Deploy to Vercel/Netlify and add the link above._
 - Recharts
 
 You can replace the sample data in `src/App.jsx` with your own CSV or API and add more interactions (e.g. click, time scrubber).
+
+## Competition (Spring Into AI Build Sprint)
+
+- [Official rules](https://advisoryhour.substack.com/p/spring-into-ai-competition-rules) — Eric Rhea, Advisory Hour
+- [Week 1 kickoff: Data Visualization & Interactions](https://substack.com/home/post/p-187389593)
+- [FAQ & tips](https://advisoryhour.substack.com/p/faq-and-tips-on-competition)
