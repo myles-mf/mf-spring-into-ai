@@ -29,11 +29,7 @@ const CATEGORIES = ['All', 'A', 'B']
 
 export default function App() {
   const [category, setCategory] = useState('All')
-
-  const data =
-    category === 'All'
-      ? ALL_DATA
-      : ALL_DATA.filter((d) => d.category === category)
+  const data = category === 'All' ? ALL_DATA : ALL_DATA.filter((d) => d.category === category)
 
   return (
     <div style={{ maxWidth: 800, margin: '0 auto' }}>
@@ -76,11 +72,8 @@ export default function App() {
             labelStyle={{ color: '#e2e8f0' }}
           />
           <Bar dataKey="value" radius={[4, 4, 0, 0]}>
-            {data.map((entry, i) => (
-              <Cell
-                key={i}
-                fill={entry.category === 'A' ? '#38bdf8' : '#a78bfa'}
-              />
+            {data.map((entry) => (
+              <Cell key={`${entry.month}-${entry.category}`} fill={entry.category === 'A' ? '#38bdf8' : '#a78bfa'} />
             ))}
           </Bar>
         </BarChart>
