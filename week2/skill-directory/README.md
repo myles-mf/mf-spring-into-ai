@@ -20,11 +20,15 @@ Open http://localhost:3000. API: http://localhost:3000/api/skills.
 
 ## Live app
 
-_Deploy to Vercel and add the URL here._
+**Live app:** https://mf-spring-into-ai-week2.vercel.app
+
+API: https://mf-spring-into-ai-week2.vercel.app/api/skills
 
 ## Screenshot
 
-_Add a screenshot of the landing page (e.g. in this README or `/screenshots`)._
+Add a screenshot of the deployed landing page to `screenshots/directory.png` (or paste below). Example:
+
+![Skill Directory](screenshots/directory.png)
 
 ## Stack
 
