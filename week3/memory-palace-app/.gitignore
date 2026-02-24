@@ -1,0 +1,8 @@
+# Dependencies and build
+node_modules
+.next
+
+# Env (key never in repo)
+.env
+.env.local
+.env.*.local

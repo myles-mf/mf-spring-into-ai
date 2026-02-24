@@ -3,6 +3,7 @@ node_modules
 *.local
 .env
 .env.*
+!.env.example
 
 # Local / your-part-only — not in GitHub
 week1/YOUR-PART-ONLY.md
@@ -17,3 +18,19 @@ WEEK1-WIN-PLAN.md
 week2/PLAN.md
 week2/TRACKER.md
 week2/COMPETITOR-REFS.md
+week2/LINKEDIN-POST.txt
+week2/SUBSTACK-POST.txt
+week2/SUBMISSION-LINKS.txt
+
+# Week 3 — local only
+week3/PLAN.md
+week3/TRACKER.md
+week3/*-POST*.md
+week3/*-POST*.txt
+week3/YouTube-SCRIPT.md
+week3/DRAFT-POSTS.md
+week3/COMPETITOR-REFS.md
+week3/SUBMISSION-LINKS.txt
+week3/YOUR-PART-ONLY.md
+week3/GUIDE.md
+week3/PROJECT-NAME.md
