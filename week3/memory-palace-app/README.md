@@ -33,28 +33,37 @@ For the competition we keep usage predictable:
 
 *(Add your Vercel production URL here after deploy for the 2× multiplier.)*
 
-## Deploy with Vercel and configure the key
+## Deploy with Vercel CLI
 
-1. **Log in (if needed):**  
-   `npx vercel login`  
-   Follow the browser link to log in or link your token.
+1. **Log in (once):**  
+   ```bash
+   npx vercel login
+   ```  
+   Follow the browser link to log in.
 
 2. **Deploy from the app directory:**  
    ```bash
    cd week3/memory-palace-app
    npx vercel
    ```  
-   Accept defaults (or set root to current dir). You’ll get a preview URL; run `npx vercel --prod` to promote to production.
+   First time: link to existing Vercel account/team and accept defaults (root = current dir). You get a preview URL.
 
-3. **Add the API key and token budget:**  
-   - Open [vercel.com](https://vercel.com) → your project → **Settings** → **Environment Variables**.
-   - Add:
-     - **`OPENAI_API_KEY`** — your OpenAI API key (required).
-     - **`AI_MAX_TOKENS`** — optional, e.g. `512` (default 512).
-   - Save. Then **Deployments** → ⋮ on latest → **Redeploy** so the new env vars are used.
+3. **Production:**  
+   ```bash
+   npx vercel --prod
+   ```
 
-4. **Update this README:**  
-   Put your production URL in the “Live app” section above and add a screenshot to `screenshots/` for the 2× multiplier.
+4. **Set the API key (required for Create):**  
+   - **Option A — CLI:**  
+     `npx vercel env add OPENAI_API_KEY`  
+     Choose Production (and Preview if you want), paste your OpenAI key when prompted.  
+   - **Option B — Dashboard:**  
+     [vercel.com](https://vercel.com) → project → **Settings** → **Environment Variables** → add `OPENAI_API_KEY`.  
+   Optional: `AI_MAX_TOKENS` (e.g. `512`). Then redeploy so env is applied:  
+   `npx vercel --prod` or Deployments → Redeploy in the UI.
+
+5. **README:**  
+   Paste your production URL in the “Live app” section above; add a screenshot to `screenshots/` for 2×.
 
 ## Screenshot
 

@@ -1,17 +1,67 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import Link from 'next/link'
-
-const TEMPLATE_LOCI = ['door', 'desk', 'window', 'bed', 'shelf']
+import { TEMPLATE_LOCI } from '@/app/lib/palace'
 
 type Association = { locus: string; item: string; sentence: string }
 
+type Step = 'choose' | 'topic' | 'done'
+
 export default function CreatePage() {
+  const [step, setStep] = useState<Step>('choose')
+  const [useTemplate, setUseTemplate] = useState(true)
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null)
+  const [loci, setLoci] = useState<string[]>([...TEMPLATE_LOCI])
+  const [lociLoading, setLociLoading] = useState(false)
+  const [lociError, setLociError] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
   const [topicOrList, setTopicOrList] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [associations, setAssociations] = useState<Association[] | null>(null)
+
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file || !file.type.startsWith('image/')) return
+    setLociError(null)
+    const reader = new FileReader()
+    reader.onload = () => {
+      const dataUrl = reader.result as string
+      setUploadedImage(dataUrl)
+    }
+    reader.readAsDataURL(file)
+  }
+
+  async function analyzeRoom() {
+    if (!uploadedImage) return
+    setLociLoading(true)
+    setLociError(null)
+    try {
+      const res = await fetch('/api/loci', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: uploadedImage }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || res.statusText)
+      setLoci(data.loci ?? [])
+      setUseTemplate(false)
+      setStep('topic')
+    } catch (err) {
+      setLociError(err instanceof Error ? err.message : 'Could not analyze room')
+    } finally {
+      setLociLoading(false)
+    }
+  }
+
+  function chooseTemplate() {
+    setUseTemplate(true)
+    setUploadedImage(null)
+    setLoci([...TEMPLATE_LOCI])
+    setStep('topic')
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -25,7 +75,7 @@ export default function CreatePage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           topicOrList: topicOrList.trim(),
-          loci: TEMPLATE_LOCI,
+          loci,
         }),
       })
       const data = await res.json()
@@ -33,7 +83,12 @@ export default function CreatePage() {
       const list = data.associations ?? []
       setAssociations(list)
       try {
-        sessionStorage.setItem('memory-palace-associations', JSON.stringify(list))
+        const { savePalace } = await import('@/app/lib/palace')
+        savePalace({
+          associations: list,
+          loci,
+          imageDataUrl: useTemplate ? undefined : uploadedImage ?? undefined,
+        })
       } catch (_) {}
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
@@ -51,38 +106,102 @@ export default function CreatePage() {
           </Link>
           <h1 className="mt-2 text-2xl font-bold text-amber-100">Create your palace</h1>
           <p className="mt-1 text-slate-400">
-            We’ll use a template room: door, desk, window, bed, shelf.
+            {step === 'choose' && 'Use a template room or upload a photo of your room.'}
+            {step === 'topic' && `Loci: ${loci.join(', ')}`}
           </p>
         </div>
       </header>
 
       <main className="mx-auto max-w-3xl px-4 py-8">
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="topic" className="block text-sm font-medium text-slate-300">
-              What do you want to remember?
-            </label>
-            <p className="mt-1 text-xs text-slate-500">
-              A topic (e.g. “quadratic formula”) or a short list (e.g. “apple, ball, cat, dog, egg”).
-            </p>
-            <textarea
-              id="topic"
-              value={topicOrList}
-              onChange={(e) => setTopicOrList(e.target.value)}
-              placeholder="e.g. first 5 elements of the periodic table"
-              rows={3}
-              className="mt-2 w-full rounded-lg border border-slate-700 bg-slate-800/50 px-3 py-2 text-slate-100 placeholder-slate-500 focus:border-amber-600 focus:outline-none focus:ring-1 focus:ring-amber-600"
-              disabled={loading}
-            />
+        {step === 'choose' && (
+          <div className="space-y-6">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <button
+                type="button"
+                onClick={chooseTemplate}
+                className="rounded-xl border-2 border-amber-600 bg-amber-950/30 p-6 text-left transition hover:border-amber-500 hover:bg-amber-900/20"
+              >
+                <span className="font-semibold text-amber-200">Use template room</span>
+                <p className="mt-2 text-sm text-slate-400">
+                  Door, desk, window, bed, shelf. No upload.
+                </p>
+              </button>
+              <div className="rounded-xl border-2 border-slate-600 bg-slate-800/30 p-6">
+                <span className="font-semibold text-slate-200">Use my room</span>
+                <p className="mt-2 text-sm text-slate-400">
+                  Upload a photo; AI will suggest spots (loci) in your space.
+                </p>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="mt-3 block w-full text-sm text-slate-400 file:mr-3 file:rounded-lg file:border-0 file:bg-amber-600 file:px-3 file:py-1.5 file:text-slate-900"
+                />
+                {uploadedImage && (
+                  <div className="mt-3">
+                    <img
+                      src={uploadedImage}
+                      alt="Your room"
+                      className="max-h-32 rounded-lg object-contain"
+                    />
+                    <button
+                      type="button"
+                      onClick={analyzeRoom}
+                      disabled={lociLoading}
+                      className="mt-2 rounded-lg bg-amber-600 px-3 py-1.5 text-sm font-medium text-slate-900 hover:bg-amber-500 disabled:opacity-50"
+                    >
+                      {lociLoading ? 'Analyzing…' : 'Analyze room'}
+                    </button>
+                  </div>
+                )}
+                {lociError && (
+                  <p className="mt-2 text-sm text-red-400">{lociError}</p>
+                )}
+              </div>
+            </div>
           </div>
-          <button
-            type="submit"
-            disabled={loading || !topicOrList.trim()}
-            className="rounded-lg bg-amber-600 px-4 py-2 font-medium text-slate-900 hover:bg-amber-500 disabled:opacity-50"
-          >
-            {loading ? 'Generating…' : 'Generate associations'}
-          </button>
-        </form>
+        )}
+
+        {step === 'topic' && (
+          <>
+            <div className="mb-6 flex items-center gap-2 text-sm text-slate-500">
+              <button
+                type="button"
+                onClick={() => setStep('choose')}
+                className="text-amber-400 hover:underline"
+              >
+                ← Change room
+              </button>
+            </div>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label htmlFor="topic" className="block text-sm font-medium text-slate-300">
+                  What do you want to remember?
+                </label>
+                <p className="mt-1 text-xs text-slate-500">
+                  A topic (e.g. “quadratic formula”) or a short list.
+                </p>
+                <textarea
+                  id="topic"
+                  value={topicOrList}
+                  onChange={(e) => setTopicOrList(e.target.value)}
+                  placeholder="e.g. first 5 elements of the periodic table"
+                  rows={3}
+                  className="mt-2 w-full rounded-lg border border-slate-700 bg-slate-800/50 px-3 py-2 text-slate-100 placeholder-slate-500 focus:border-amber-600 focus:outline-none focus:ring-1 focus:ring-amber-600"
+                  disabled={loading}
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={loading || !topicOrList.trim()}
+                className="rounded-lg bg-amber-600 px-4 py-2 font-medium text-slate-900 hover:bg-amber-500 disabled:opacity-50"
+              >
+                {loading ? 'Generating…' : 'Generate associations'}
+              </button>
+            </form>
+          </>
+        )}
 
         {error && (
           <div className="mt-6 rounded-lg border border-red-900/50 bg-red-950/30 px-4 py-3 text-sm text-red-200">
@@ -94,7 +213,7 @@ export default function CreatePage() {
           <div className="mt-8">
             <h2 className="text-lg font-semibold text-amber-100">Your associations</h2>
             <p className="mt-1 text-sm text-slate-400">
-              Walk through each spot in your mind, or go to Explore to see them on the room.
+              Go to Explore to see them on the room.
             </p>
             <ul className="mt-4 space-y-4">
               {associations.map((a, i) => (
@@ -121,6 +240,7 @@ export default function CreatePage() {
                 onClick={() => {
                   setAssociations(null)
                   setTopicOrList('')
+                  setStep('choose')
                 }}
                 className="rounded-lg border border-slate-600 px-4 py-2 text-slate-300 hover:bg-slate-800"
               >
