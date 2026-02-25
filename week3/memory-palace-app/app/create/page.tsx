@@ -1,18 +1,20 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect, Suspense } from 'react'
 import Link from 'next/link'
-import { TEMPLATE_LOCI } from '@/app/lib/palace'
+import { useSearchParams } from 'next/navigation'
+import { TEMPLATE_LOCI, type LocusRegion } from '@/app/lib/palace'
 
 type Association = { locus: string; item: string; sentence: string }
 
 type Step = 'choose' | 'topic' | 'done'
 
-export default function CreatePage() {
+function CreatePageContent() {
   const [step, setStep] = useState<Step>('choose')
   const [useTemplate, setUseTemplate] = useState(true)
   const [uploadedImage, setUploadedImage] = useState<string | null>(null)
   const [loci, setLoci] = useState<string[]>([...TEMPLATE_LOCI])
+  const [regions, setRegions] = useState<LocusRegion[]>([])
   const [lociLoading, setLociLoading] = useState(false)
   const [lociError, setLociError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -21,6 +23,13 @@ export default function CreatePage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [associations, setAssociations] = useState<Association[] | null>(null)
+  const [copied, setCopied] = useState(false)
+  const searchParams = useSearchParams()
+
+  useEffect(() => {
+    const tryTopic = searchParams.get('try')
+    if (tryTopic && typeof tryTopic === 'string') setTopicOrList(decodeURIComponent(tryTopic).trim())
+  }, [searchParams])
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -47,6 +56,7 @@ export default function CreatePage() {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || res.statusText)
       setLoci(data.loci ?? [])
+      setRegions(Array.isArray(data.regions) ? data.regions : [])
       setUseTemplate(false)
       setStep('topic')
     } catch (err) {
@@ -60,6 +70,7 @@ export default function CreatePage() {
     setUseTemplate(true)
     setUploadedImage(null)
     setLoci([...TEMPLATE_LOCI])
+    setRegions([])
     setStep('topic')
   }
 
@@ -88,6 +99,7 @@ export default function CreatePage() {
           associations: list,
           loci,
           imageDataUrl: useTemplate ? undefined : uploadedImage ?? undefined,
+          regions: useTemplate ? undefined : regions.length ? regions : undefined,
         })
       } catch (_) {}
     } catch (err) {
@@ -107,7 +119,7 @@ export default function CreatePage() {
           <h1 className="mt-2 text-2xl font-bold text-amber-100">Create your palace</h1>
           <p className="mt-1 text-slate-400">
             {step === 'choose' && 'Use a template room or upload a photo of your room.'}
-            {step === 'topic' && `Loci: ${loci.join(', ')}`}
+            {step === 'topic' && (useTemplate ? 'You’ll walk through 5 spots. What do you want to remember?' : `Your room’s spots: ${loci.join(', ')}`)}
           </p>
         </div>
       </header>
@@ -115,16 +127,28 @@ export default function CreatePage() {
       <main className="mx-auto max-w-3xl px-4 py-8">
         {step === 'choose' && (
           <div className="space-y-6">
+            <p className="text-slate-400 text-sm">
+              Pick a space — template is instant; your room uses a photo so the palace is personally meaningful.
+            </p>
             <div className="grid gap-4 sm:grid-cols-2">
               <button
                 type="button"
                 onClick={chooseTemplate}
                 className="rounded-xl border-2 border-amber-600 bg-amber-950/30 p-6 text-left transition hover:border-amber-500 hover:bg-amber-900/20"
               >
-                <span className="font-semibold text-amber-200">Use template room</span>
-                <p className="mt-2 text-sm text-slate-400">
-                  Door, desk, window, bed, shelf. No upload.
-                </p>
+                <div className="flex gap-4">
+                  <img
+                    src="/room-template.svg"
+                    alt=""
+                    className="w-24 h-16 object-cover rounded-lg border border-slate-700 shrink-0"
+                  />
+                  <div>
+                    <span className="font-semibold text-amber-200">Use template room</span>
+                    <p className="mt-2 text-sm text-slate-400">
+                      Five spots: door, desk, window, bed, shelf. No upload — try the technique in under a minute.
+                    </p>
+                  </div>
+                </div>
               </button>
               <div className="rounded-xl border-2 border-slate-600 bg-slate-800/30 p-6">
                 <span className="font-semibold text-slate-200">Use my room</span>
@@ -165,7 +189,7 @@ export default function CreatePage() {
 
         {step === 'topic' && (
           <>
-            <div className="mb-6 flex items-center gap-2 text-sm text-slate-500">
+            <div className="mb-6 flex items-center justify-between gap-2 text-sm text-slate-500">
               <button
                 type="button"
                 onClick={() => setStep('choose')}
@@ -173,6 +197,9 @@ export default function CreatePage() {
               >
                 ← Change room
               </button>
+              <Link href="/" className="text-slate-500 hover:text-slate-400">
+                What’s the Memory Palace?
+              </Link>
             </div>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
@@ -180,8 +207,27 @@ export default function CreatePage() {
                   What do you want to remember?
                 </label>
                 <p className="mt-1 text-xs text-slate-500">
-                  A topic (e.g. “quadratic formula”) or a short list.
+                  {useTemplate
+                    ? 'A topic (e.g. quadratic formula) or a list of 5 items — we’ll put one at each spot in the room.'
+                    : 'A topic or a short list. We’ll assign each item to a spot in your room.'}
                 </p>
+                <p className="mt-2 text-xs text-slate-500">Try one:</p>
+                <div className="mt-1 flex flex-wrap gap-2">
+                  {[
+                    'first 5 elements of the periodic table',
+                    'quadratic formula',
+                    'five Spanish words for colors',
+                  ].map((example) => (
+                    <button
+                      key={example}
+                      type="button"
+                      onClick={() => setTopicOrList(example)}
+                      className="rounded-md border border-slate-600 bg-slate-800 px-2.5 py-1 text-xs text-slate-300 hover:bg-slate-700 hover:border-slate-500"
+                    >
+                      {example}
+                    </button>
+                  ))}
+                </div>
                 <textarea
                   id="topic"
                   value={topicOrList}
@@ -191,6 +237,23 @@ export default function CreatePage() {
                   className="mt-2 w-full rounded-lg border border-slate-700 bg-slate-800/50 px-3 py-2 text-slate-100 placeholder-slate-500 focus:border-amber-600 focus:outline-none focus:ring-1 focus:ring-amber-600"
                   disabled={loading}
                 />
+                {topicOrList.trim() && (
+                  <div className="mt-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const url = new URL(window.location.href)
+                        url.searchParams.set('try', topicOrList.trim())
+                        navigator.clipboard.writeText(url.toString())
+                        setCopied(true)
+                        setTimeout(() => setCopied(false), 2000)
+                      }}
+                      className="text-xs text-amber-400 hover:underline"
+                    >
+                      {copied ? 'Copied!' : 'Copy link so someone else can try this topic'}
+                    </button>
+                  </div>
+                )}
               </div>
               <button
                 type="submit"
@@ -228,12 +291,21 @@ export default function CreatePage() {
                 </li>
               ))}
             </ul>
-            <div className="mt-6 flex gap-3">
+            <p className="mt-2 text-xs text-slate-500">
+              Explore to walk through the room, or jump straight to the quiz.
+            </p>
+            <div className="mt-4 flex flex-wrap gap-3">
               <Link
                 href="/explore"
                 className="rounded-lg bg-amber-600 px-4 py-2 font-medium text-slate-900 hover:bg-amber-500"
               >
                 Explore the room
+              </Link>
+              <Link
+                href="/quiz"
+                className="rounded-lg border border-amber-600 px-4 py-2 font-medium text-amber-200 hover:bg-amber-900/30"
+              >
+                Jump to quiz
               </Link>
               <button
                 type="button"
@@ -251,5 +323,29 @@ export default function CreatePage() {
         )}
       </main>
     </div>
+  )
+}
+
+function CreatePageFallback() {
+  return (
+    <div className="min-h-screen">
+      <header className="border-b border-amber-900/50 bg-slate-900/50">
+        <div className="mx-auto max-w-3xl px-4 py-6">
+          <Link href="/" className="text-sm text-slate-500 hover:text-amber-400">
+            ← Memory Palace
+          </Link>
+          <h1 className="mt-2 text-2xl font-bold text-amber-100">Create your palace</h1>
+        </div>
+      </header>
+      <main className="mx-auto max-w-3xl px-4 py-8 text-slate-400">Loading…</main>
+    </div>
+  )
+}
+
+export default function CreatePage() {
+  return (
+    <Suspense fallback={<CreatePageFallback />}>
+      <CreatePageContent />
+    </Suspense>
   )
 }

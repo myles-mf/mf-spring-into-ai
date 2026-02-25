@@ -4,7 +4,7 @@ import './globals.css'
 export const metadata: Metadata = {
   title: 'Memory Palace — Spring Into AI Week 3',
   description:
-    'AI-powered Memory Palace (Method of Loci). Remember anything by placing it in your space. Interactive tutorial for Week 3.',
+    'Learn the Method of Loci: put what you want to remember in a room (template or your photo). AI generates vivid associations; you explore and quiz. Interactive tutorial — learning by doing.',
 }
 
 export default function RootLayout({

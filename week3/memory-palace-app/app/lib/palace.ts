@@ -14,16 +14,22 @@ export const TEMPLATE_HOTSPOTS: Record<string, { left: number; top: number; widt
 
 export type Association = { locus: string; item: string; sentence: string }
 
+/** Bounding box as % of image (0-100) for highlighting a locus in a photo */
+export type LocusRegion = { locus: string; left: number; top: number; width: number; height: number }
+
 export type PalaceState = {
   associations: Association[]
   loci: string[]
   /** base64 data URL if user uploaded their room */
   imageDataUrl?: string
+  /** Where each locus is in the image (for custom room highlight) */
+  regions?: LocusRegion[]
 }
 
 const KEY_ASSOCIATIONS = 'memory-palace-associations'
 const KEY_LOCI = 'memory-palace-loci'
 const KEY_IMAGE = 'memory-palace-image'
+const KEY_REGIONS = 'memory-palace-regions'
 
 export function savePalace(state: PalaceState) {
   try {
@@ -31,6 +37,8 @@ export function savePalace(state: PalaceState) {
     sessionStorage.setItem(KEY_LOCI, JSON.stringify(state.loci))
     if (state.imageDataUrl) sessionStorage.setItem(KEY_IMAGE, state.imageDataUrl)
     else sessionStorage.removeItem(KEY_IMAGE)
+    if (state.regions?.length) sessionStorage.setItem(KEY_REGIONS, JSON.stringify(state.regions))
+    else sessionStorage.removeItem(KEY_REGIONS)
   } catch (_) {}
 }
 
@@ -43,7 +51,9 @@ export function loadPalace(): PalaceState | null {
     const loci = JSON.parse(rawL) as string[]
     if (!Array.isArray(associations) || !Array.isArray(loci)) return null
     const imageDataUrl = sessionStorage.getItem(KEY_IMAGE) ?? undefined
-    return { associations, loci, imageDataUrl }
+    const rawR = sessionStorage.getItem(KEY_REGIONS)
+    const regions = rawR ? (JSON.parse(rawR) as LocusRegion[]) : undefined
+    return { associations, loci, imageDataUrl, regions }
   } catch (_) {
     return null
   }
