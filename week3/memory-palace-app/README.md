@@ -31,7 +31,7 @@ For the competition we keep usage predictable:
 
 ## Live app
 
-*(Add your Vercel production URL here after deploy for the 2× multiplier.)*
+**https://memory-palace-app.vercel.app**
 
 ## Deploy with Vercel CLI
 
