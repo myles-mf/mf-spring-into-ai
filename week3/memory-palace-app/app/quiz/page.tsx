@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react'
 import Link from 'next/link'
-import { speak } from '@/app/lib/tts'
+import { speakAsKeeper } from '@/app/lib/tts'
 
 type Association = { locus: string; item: string; sentence: string }
 
@@ -82,11 +82,11 @@ export default function QuizPage() {
     const correct = question.type === 'locus' ? question.item : question.locus
     const isCorrect = choice === correct
     const msg = isCorrect
-      ? `Correct! ${question.locus} → ${question.item}. Keep going — you're building the palace in your head.`
-      : `Not quite. ${question.locus} was for ${question.item}.`
+      ? `Correct. The ${question.locus} held ${question.item}. Well done.`
+      : `Not quite. The ${question.locus} was for ${question.item}.`
     setScore((s) => ({ ...s, total: s.total + 1, correct: s.correct + (isCorrect ? 1 : 0) }))
     setFeedback(msg)
-    if (!challengeActive) speak(msg)
+    if (!challengeActive) speakAsKeeper(msg)
     if (challengeActive && isCorrect) challengeCorrectRef.current += 1
     if (challengeActive) {
       setTimeout(() => pickQuestion(), 600)
@@ -191,20 +191,25 @@ export default function QuizPage() {
               Back to normal quiz
             </button>
           )}
-          <button
-            type="button"
-            onClick={() => {
-              const url = typeof window !== 'undefined' ? window.location.origin : ''
-              const text = `Remind yourself to practice your Memory Palace tomorrow — spacing helps! ${url}`
-              navigator.clipboard.writeText(text).then(() => {
-                setRemindCopied(true)
-                setTimeout(() => setRemindCopied(false), 2500)
-              })
-            }}
-            className="mt-2 text-xs text-slate-500 hover:text-amber-400"
-          >
-            {remindCopied ? 'Copied reminder!' : 'Copy reminder for later'}
-          </button>
+          <div className="mt-2 flex items-center gap-3 text-xs">
+            <Link href="/broadcast" className="text-amber-400 hover:underline">
+              ▶ Palace Radio
+            </Link>
+            <button
+              type="button"
+              onClick={() => {
+                const url = typeof window !== 'undefined' ? window.location.origin : ''
+                const text = `Remind yourself to practice your Memory Palace tomorrow — spacing helps! ${url}`
+                navigator.clipboard.writeText(text).then(() => {
+                  setRemindCopied(true)
+                  setTimeout(() => setRemindCopied(false), 2500)
+                })
+              }}
+              className="text-slate-500 hover:text-amber-400"
+            >
+              {remindCopied ? 'Copied reminder!' : 'Copy reminder for later'}
+            </button>
+          </div>
         </div>
       </header>
 
@@ -232,16 +237,16 @@ export default function QuizPage() {
               <button
                 type="button"
                 onClick={() =>
-                  speak(
+                  speakAsKeeper(
                     question.type === 'locus'
                       ? `What did we put at the ${question.locus}?`
                       : `Where did we put "${question.item}"?`
                   )
                 }
                 className="shrink-0 rounded-lg border border-slate-600 bg-slate-800 px-3 py-1.5 text-sm text-slate-300 hover:bg-slate-700"
-                title="Read question aloud"
+                title="Hear the Keeper"
               >
-                🔊 Read aloud
+                ▶ Hear the Keeper
               </button>
             </div>
             <ul className="mt-4 space-y-2">

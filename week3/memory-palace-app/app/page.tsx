@@ -12,12 +12,29 @@ export default function Home() {
             Learn the Method of Loci — then use it to remember anything. AI builds your palace; you explore and quiz.
           </p>
           <p className="mt-3 text-sm text-slate-500">
-            Spring Into AI · Week 3: Interactive Tutorials
+            Spring Into AI · Week 3: Interactive Tutorials · Week 4: Soundwave — Palace Radio
           </p>
         </div>
       </header>
 
       <main className="mx-auto max-w-3xl px-4 py-10 space-y-10">
+        {/* Week 4 — Palace Radio */}
+        <section className="rounded-xl border-2 border-amber-600 bg-amber-950/30 p-6">
+          <h2 className="text-lg font-semibold text-amber-100">▶ Palace Radio — Week 4: Soundwave</h2>
+          <p className="mt-2 text-slate-300">
+            Tune in. The Voice of the Palace guides you through every room. One broadcast: intro, each locus, outro.
+          </p>
+          <Link
+            href="/broadcast"
+            className="mt-4 inline-block rounded-lg bg-amber-600 px-4 py-2 font-medium text-slate-900 hover:bg-amber-500"
+          >
+            Start Palace Radio
+          </Link>
+          <p className="mt-2 text-sm text-slate-500">
+            Create a palace first, then open Palace Radio — or go to Explore and click “Palace Radio” after building.
+          </p>
+        </section>
+
         {/* Explain the concept — hits "learning" / "tutorial" */}
         <section className="rounded-xl border border-amber-800/40 bg-slate-900/50 p-6">
           <h2 className="text-lg font-semibold text-amber-100">What’s the Memory Palace?</h2>
@@ -82,7 +99,7 @@ export default function Home() {
 
       <footer className="mt-16 border-t border-slate-800 pt-8 pb-12 text-center text-sm text-slate-500 space-y-1">
         <p>
-          The Method of Loci has been used for millennia — now with AI.
+          The Method of Loci has been used for millennia — now with AI. Week 4: Soundwave — Palace Radio.
         </p>
         <p>
           <Link
@@ -91,7 +108,7 @@ export default function Home() {
             rel="noopener noreferrer"
             className="text-amber-400 hover:underline"
           >
-            Spring Into AI · Week 3: Interactive Tutorials
+            Spring Into AI · Week 3: Interactive Tutorials · Week 4: Soundwave
           </Link>
         </p>
       </footer>

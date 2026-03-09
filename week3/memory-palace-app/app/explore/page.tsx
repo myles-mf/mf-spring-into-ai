@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { speak } from '@/app/lib/tts'
+import { speakAsKeeper } from '@/app/lib/tts'
 import {
   loadPalace,
   TEMPLATE_LOCI,
@@ -42,7 +42,7 @@ export default function ExplorePage() {
             Click each spot to see what you put there. Your brain remembers places easily — that’s why this works.
           </p>
           <div className="mt-3 rounded-lg border border-amber-700/40 bg-amber-950/20 px-3 py-2 text-sm text-amber-200/90">
-            <strong>Pro tip:</strong> Use the Read aloud button when you click a spot — saying it out loud helps it stick.
+            <strong>Pro tip:</strong> Use Hear the Keeper when you click a spot — or <Link href="/broadcast" className="text-amber-400 hover:underline">tune in to Palace Radio</Link> for the full tour.
           </div>
         </div>
       </header>
@@ -189,17 +189,23 @@ export default function ExplorePage() {
                 <button
                   type="button"
                   onClick={() =>
-                    speak(`${selected.locus}: ${selected.item}. ${selected.sentence}`)
+                    speakAsKeeper(`${selected.locus}. ${selected.item}. ${selected.sentence}.`)
                   }
                   className="mt-3 rounded-lg border border-slate-600 bg-slate-800 px-3 py-1.5 text-sm text-slate-300 hover:bg-slate-700"
-                  title="Read aloud"
+                  title="Hear the Keeper"
                 >
-                  🔊 Read aloud
+                  ▶ Hear the Keeper
                 </button>
               </div>
             )}
 
             <div className="mt-8 flex flex-wrap gap-3 no-print">
+              <Link
+                href="/broadcast"
+                className="rounded-lg border border-amber-500 bg-amber-950/40 px-4 py-2 font-medium text-amber-200 hover:bg-amber-900/40"
+              >
+                ▶ Palace Radio
+              </Link>
               <Link
                 href="/quiz"
                 className="rounded-lg bg-amber-600 px-4 py-2 font-medium text-slate-900 hover:bg-amber-500"

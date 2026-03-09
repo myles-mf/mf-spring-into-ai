@@ -1,32 +1,18 @@
-# Week 3: An AI Memory Palace — Interactive Tutorial That Actually Teaches
+# Memory Palace — Week 3 of the Spring Into AI Build Sprint
 
-Spring Into AI Week 3 is **interactive tutorials**: learning that feels like play, not study. I built a **Memory Palace** app — the ancient Method of Loci, powered by AI.
+This week's theme: interactive tutorials. I built a Memory Palace app — the ancient Method of Loci, powered by AI.
 
-## What’s the Memory Palace?
+**What it is**
 
-It’s a technique that’s been around for thousands of years: you put things you want to remember in *places* you can picture. A room, a street, a path. Your brain is better at remembering *where* things are than raw facts, so when you link a fact to a location (and a vivid image), recall sticks. No flashcards, no grinding — just a mental walk through your space.
+You pick a space (template room or a photo of your room). You say what you want to remember — a formula, a list, vocab. The AI assigns each item to a spot and generates a vivid association. You explore the room (click each spot, optional read-aloud), then quiz yourself. There's a 60-second challenge and "copy reminder for later" so you can practice again tomorrow. If you upload your room, the AI suggests spots and highlights them on your photo.
 
-## How the app works
+**Why it fits**
 
-1. **Choose your space** — Use a template room (five spots: door, desk, window, bed, shelf) or upload a photo of your actual room. If you upload, the AI looks at your image and suggests 4–6 spots (table, lamp, couch, etc.) and even highlights them on your photo when you explore.
+Week 3 was learning that feels like play. The app teaches the Method of Loci and lets you use it in under a minute. Replayable, AI-heavy (vision for your room + text for associations), and built so you learn by doing.
 
-2. **Say what you want to remember** — A topic (e.g. “quadratic formula”) or a list (e.g. “first 5 elements of the periodic table”). The AI assigns each item to a spot and generates a short, vivid, silly association so it’s easy to recall.
+**Links**
 
-3. **Explore and quiz** — Click through the room (or your photo); each spot shows its association. You can use “Read aloud” for audio. Then take the quiz: “What’s at the door?” or “Where did we put mitochondria?” There’s a **60-second challenge** mode and a “Copy reminder for later” so you can practice again tomorrow — spacing out practice helps long-term retention.
+Live: https://memory-palace-app.vercel.app  
+Repo: https://github.com/myles-mf/mf-spring-into-ai
 
-You can also **share a topic**: copy a link so someone else can try the same one (e.g. “try this topic” with one click). And you can **print or save as PDF** your palace for offline review.
-
-## Why it fits Week 3
-
-- **Interactive:** You’re clicking, exploring, answering — not passively reading.
-- **Teaches something real:** The app explains the Method of Loci and then lets you use it immediately.
-- **Replayable:** New topic, new room, or same palace again; plus share links and the 60s challenge.
-- **AI in the middle:** Vision for your room’s spots (and where to highlight them), text for associations and quiz flow. No gimmick — the product doesn’t work without it.
-
-Learning by doing. The technique has been used for millennia; now with AI, you can build your palace in under a minute.
-
-**Try it:** [memory-palace-app.vercel.app](https://memory-palace-app.vercel.app)
-
----
-
-*Spring Into AI · Week 3: Interactive Tutorials*
+Try it and share a topic link so someone else can try the same one. More next week.
