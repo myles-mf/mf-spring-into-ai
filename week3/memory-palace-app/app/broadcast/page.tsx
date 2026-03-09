@@ -194,7 +194,7 @@ function BroadcastPageContent() {
           </Link>
           <h1 className="mt-2 text-2xl font-bold text-amber-100">Palace Radio</h1>
           <p className="mt-1 text-slate-400">
-            Tune in. The Voice of the Palace will guide you through every locus.
+            Tune in. The Voice of the Palace will guide you through every locus. Plain or Cipher (numbers station).
           </p>
         </div>
       </header>
@@ -204,21 +204,25 @@ function BroadcastPageContent() {
           {!playing && !completed && (
             <>
               <div className="flex flex-wrap items-center justify-center gap-6 mb-4">
-                <div className="flex rounded-lg border border-slate-600 p-0.5">
-                  <button
-                    type="button"
-                    onClick={() => setMode('plain')}
-                    className={`px-3 py-1.5 text-sm rounded-md transition ${mode === 'plain' ? 'bg-amber-600 text-slate-900' : 'text-slate-400 hover:text-slate-200'}`}
-                  >
-                    Plain
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setMode('cipher')}
-                    className={`px-3 py-1.5 text-sm rounded-md transition ${mode === 'cipher' ? 'bg-amber-600 text-slate-900' : 'text-slate-400 hover:text-slate-200'}`}
-                  >
-                    Cipher (numbers station)
-                  </button>
+                <div>
+                  <p className="text-xs text-slate-500 mb-1.5 text-center">Mode</p>
+                  <div className="flex rounded-lg border border-amber-600/50 bg-slate-800/50 p-0.5">
+                    <button
+                      type="button"
+                      onClick={() => setMode('plain')}
+                      className={`px-4 py-2 text-sm rounded-md transition ${mode === 'plain' ? 'bg-amber-600 text-slate-900 font-medium' : 'text-slate-400 hover:text-slate-200'}`}
+                    >
+                      Plain
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMode('cipher')}
+                      className={`px-4 py-2 text-sm rounded-md transition ${mode === 'cipher' ? 'bg-amber-600 text-slate-900 font-medium' : 'text-slate-400 hover:text-slate-200'}`}
+                    >
+                      Cipher
+                    </button>
+                  </div>
+                  <p className="text-xs text-slate-500 mt-1 text-center">{mode === 'cipher' ? 'Numbers station — decoder below' : 'Normal tour'}</p>
                 </div>
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
